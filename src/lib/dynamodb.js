@@ -60,6 +60,10 @@ export async function getSessionsTable() {
   return await getTableName("SESSIONS_TABLE_NAME");
 }
 
+export async function getDataTable() {
+  return await getTableName("SAMPLE_DATA_TABLE_NAME");
+}
+
 export async function createItem(tableName, item) {
   const { client } = await getDynamoClient();
   const command = new PutCommand({
@@ -159,6 +163,79 @@ export async function scanTable(
 
   const result = await client.send(new ScanCommand(command));
   return result.Items;
+}
+
+export async function scanTablePaginated(
+  tableName,
+  limit = 50,
+  exclusiveStartKey = null,
+  filterExpression = null,
+  expressionAttributeValues = {},
+  expressionAttributeNames = {}
+) {
+  const { client } = await getDynamoClient();
+  const command = {
+    TableName: tableName,
+    Limit: limit,
+  };
+
+  if (exclusiveStartKey) {
+    command.ExclusiveStartKey = exclusiveStartKey;
+  }
+
+  if (filterExpression) {
+    command.FilterExpression = filterExpression;
+    command.ExpressionAttributeValues = expressionAttributeValues;
+
+    if (Object.keys(expressionAttributeNames).length > 0) {
+      command.ExpressionAttributeNames = expressionAttributeNames;
+    }
+  }
+
+  const result = await client.send(new ScanCommand(command));
+  return {
+    items: result.Items || [],
+    lastEvaluatedKey: result.LastEvaluatedKey || null,
+    count: result.Count || 0,
+    scannedCount: result.ScannedCount || 0,
+  };
+}
+
+export async function countTableItems(
+  tableName,
+  filterExpression = null,
+  expressionAttributeValues = {},
+  expressionAttributeNames = {}
+) {
+  const { client } = await getDynamoClient();
+  let totalCount = 0;
+  let exclusiveStartKey = null;
+
+  do {
+    const command = {
+      TableName: tableName,
+      Select: "COUNT",
+    };
+
+    if (exclusiveStartKey) {
+      command.ExclusiveStartKey = exclusiveStartKey;
+    }
+
+    if (filterExpression) {
+      command.FilterExpression = filterExpression;
+      command.ExpressionAttributeValues = expressionAttributeValues;
+
+      if (Object.keys(expressionAttributeNames).length > 0) {
+        command.ExpressionAttributeNames = expressionAttributeNames;
+      }
+    }
+
+    const result = await client.send(new ScanCommand(command));
+    totalCount += result.Count || 0;
+    exclusiveStartKey = result.LastEvaluatedKey || null;
+  } while (exclusiveStartKey);
+
+  return totalCount;
 }
 
 export async function createUser(userData) {

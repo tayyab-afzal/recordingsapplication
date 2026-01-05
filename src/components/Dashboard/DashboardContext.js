@@ -5,7 +5,7 @@ import { createContext, useContext, useState } from "react";
 const DashboardContext = createContext();
 
 export function DashboardProvider({ children }) {
-  const [activeModule, setActiveModule] = useState("overview");
+  const [activeModule, setActiveModule] = useState("recordings");
 
   return (
     <DashboardContext.Provider value={{ activeModule, setActiveModule }}>

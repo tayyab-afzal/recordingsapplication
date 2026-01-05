@@ -50,7 +50,7 @@ export default function UsersModule() {
       <div className="dashboard-card w-3/4 mx-auto">
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-300 border-t-transparent"></div>
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-teal-300 border-t-transparent"></div>
           </div>
         ) : error ? (
           <div className="error-text">
@@ -120,7 +120,7 @@ export default function UsersModule() {
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                               user.role === "admin"
-                                ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
+                                ? "bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300"
                                 : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
                             }`}
                           >
